@@ -1,13 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-  font-family: Outfit;
+@theme {
+  --font-display: "Outfit", sans-serif;
+  --color-gray-900: #0d0d0d;
+  --color-gray-800: #171717;
+  --color-gray-700: #212121;
+  --color-gray-600: #2f2f2f;
+  --color-border: #2f2f2f;
+  --color-surface-0: #0d0d0d;
+  --color-surface-2: #171121;
+  --color-surface-3: #2f2f2f;
+  --color-txt: #ececec;
+  --color-txt-secondary: #b4b4b4;
+  --color-txt-muted: #8e8e8e;
 }
 
+html,
+body,
 #root {
   min-height: 100vh;
-  display: flex;
+  background: #0d0d0d;
+  color: #ececec;
+  font-family: Outfit, system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.18s ease-out;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.22s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(-12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
