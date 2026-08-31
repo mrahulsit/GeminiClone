@@ -1,96 +1,81 @@
-import { Link } from "react-router-dom";
-import { PiCodeBold, PiLightbulbBold, PiPencilSimpleBold, PiBookOpenBold } from "react-icons/pi";
+import {
+  PiCodeBold,
+  PiLightbulbBold,
+  PiPencilSimpleBold,
+  PiBookOpenBold,
+} from "react-icons/pi";
+import type { IconType } from "react-icons";
 import ScrollReveal from "./ScrollReveal";
-import TiltCard from "./TiltCard";
-import { useStagger } from "../../hooks/useReveal";
-import { useGlow } from "../../hooks/useGlow";
+
+interface UseCase {
+  title: string;
+  description: string;
+  icon: IconType;
+  chip: string;
+}
+
+const useCases: UseCase[] = [
+  {
+    title: "Write code",
+    description: "Generate production-ready code, tests, and fixes in any language or framework.",
+    icon: PiCodeBold,
+    chip: "bg-indigo-500/12 text-indigo-400",
+  },
+  {
+    title: "Explain concepts",
+    description: "Break complex topics into clear, digestible explanations with examples.",
+    icon: PiLightbulbBold,
+    chip: "bg-purple-500/12 text-purple-400",
+  },
+  {
+    title: "Help me write",
+    description: "Draft emails, docs, and content that sound like you — fast.",
+    icon: PiPencilSimpleBold,
+    chip: "bg-orange-500/12 text-orange-400",
+  },
+  {
+    title: "Learn something new",
+    description: "Master new subjects with practical analogies, quizzes, and step-by-step plans.",
+    icon: PiBookOpenBold,
+    chip: "bg-green-500/12 text-green-400",
+  },
+];
 
 const UseCases = () => {
-  const { ref, visible, delays } = useStagger(4, { delayMs: 110 });
-  const { onMouseMove } = useGlow();
-
-  const useCases = [
-    {
-      title: "Write Code",
-      description: "Generate production-ready code in any language or framework",
-      icon: PiCodeBold,
-      bg: "from-indigo-600/10 to-indigo-500/10",
-      border: "border-indigo-600/20",
-    },
-    {
-      title: "Explain Concepts",
-      description: "Break down complex topics into easy-to-understand explanations",
-      icon: PiLightbulbBold,
-      bg: "from-purple-600/10 to-pink-600/10",
-      border: "border-purple-600/20",
-    },
-    {
-      title: "Help Me Write",
-      description: "Generate emails, documents, and content in your voice",
-      icon: PiPencilSimpleBold,
-      bg: "from-orange-600/10 to-yellow-600/10",
-      border: "border-orange-600/20",
-    },
-    {
-      title: "Learn Something New",
-      description: "Teach yourself topics with practical examples and analogies",
-      icon: PiBookOpenBold,
-      bg: "from-green-600/10 to-emerald-600/10",
-      border: "border-green-600/20",
-    },
-  ];
-
   return (
-    <section
-      id="use-cases"
-      className="landing-section landing-section-divider bg-gray-900"
-    >
+    <section id="use-cases" className="relative py-24 sm:py-28 overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       <div className="max-w-6xl mx-auto px-6">
-        <ScrollReveal variant="up" className="text-center mb-16">
-          <span className="text-xs font-semibold text-indigo-500 uppercase tracking-widest">
-            Use Cases
+        <ScrollReveal className="text-center mb-14">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-2/70 border border-border text-[11px] font-semibold text-accent uppercase tracking-widest">
+            Use cases
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-100 mt-3 mb-4">
-            What You Can Build
+          <h2 className="mt-4 text-3xl sm:text-4xl font-bold text-txt font-display tracking-tight">
+            What you can do with <span className="text-gradient">Lumina</span>
           </h2>
-          <p className="text-txt-secondary max-w-lg mx-auto">
-            Discover what's possible with Lumina AI.
+          <p className="mt-3 text-txt-secondary max-w-xl mx-auto">
+            A few of the ways people put Lumina to work every day.
           </p>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
-          {useCases.map((useCase) => (
-            <div
-              key={useCase.title}
-              className={`reveal ${visible ? "reveal-in" : ""}`}
-              style={{ animationDelay: visible ? delays[useCases.indexOf(useCase)] : undefined }}
-            >
-              <TiltCard>
-                <div
-                  className={`card-glow relative h-full rounded-2xl border p-7 transition-all duration-300 hover:shadow-xl hover:shadow-gray-800/30 ${
-                    useCase.bg
-                  }`}
-                  onMouseMove={onMouseMove}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 items-start">
+          {useCases.map((useCase, i) => (
+            <ScrollReveal key={useCase.title} delay={i * 90}>
+              <div className="group h-full rounded-2xl border border-border bg-surface-1/70 backdrop-blur p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/30 hover:shadow-xl hover:shadow-accent/10">
+                <span
+                  className={`inline-flex w-11 h-11 rounded-xl items-center justify-center ${useCase.chip}`}
                 >
-                  {/* Icon */}
-                  <div className="mb-5 flex items-center justify-center">
-                    <useCase.icon
-                      className={`w-10 h-10 ${useCase.bg.includes("indigo") ? "text-indigo-400" : useCase.bg.includes("purple") ? "text-purple-400" : useCase.bg.includes("orange") ? "text-orange-400" : "text-green-400"}`}
-                    />
-                  </div>
-
-                  {/* Header */}
-                  <div className="mb-4">
-                    <h3 className="text-base font-semibold text-gray-100 mb-1">
-                      {useCase.title}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {useCase.description}
-                    </p>
-                  </div>
-                </div>
-              </TiltCard>
-            </div>
+                  <useCase.icon className="w-5 h-5" />
+                </span>
+                <h3 className="mt-4 text-base font-semibold text-txt font-display">
+                  {useCase.title}
+                </h3>
+                <p className="mt-2 text-sm text-txt-secondary leading-relaxed">
+                  {useCase.description}
+                </p>
+                <div className="mt-4 h-px w-10 bg-accent/30 group-hover:w-full transition-all duration-300" />
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

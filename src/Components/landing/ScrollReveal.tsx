@@ -10,6 +10,7 @@ interface ScrollRevealProps {
   className?: string;
   as?: "div" | "section" | "li";
   threshold?: number;
+  delay?: number;
 }
 
 const ScrollReveal = ({
@@ -18,6 +19,7 @@ const ScrollReveal = ({
   className = "",
   as: Tag = "div",
   threshold = 0.15,
+  delay = 0,
 }: ScrollRevealProps) => {
   const { ref, visible } = useReveal<HTMLElement>(threshold);
 
@@ -55,6 +57,7 @@ const ScrollReveal = ({
     <Tag
       ref={ref as any}
       className={`${visible ? activeClass : baseClass} ${className}`}
+      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
     >
       {children}
     </Tag>

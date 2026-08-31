@@ -1,60 +1,65 @@
+import { PiPencilSimpleBold, PiLightningBold, PiArrowsClockwiseBold } from "react-icons/pi";
 import ScrollReveal from "./ScrollReveal";
+
+const steps = [
+  {
+    title: "Describe your idea",
+    description: "Tell Lumina what you want to build, write, or understand — in plain words.",
+    icon: PiPencilSimpleBold,
+  },
+  {
+    title: "Lumina processes",
+    description: "Streams a response in real time, reasoning openly and pulling live sources when needed.",
+    icon: PiLightningBold,
+  },
+  {
+    title: "Review & iterate",
+    description: "Edit your message, regenerate, or ask follow-ups until it's exactly right.",
+    icon: PiArrowsClockwiseBold,
+  },
+];
 
 const HowItWorks = () => {
   return (
-    <section
-      id="how-it-works"
-      className="landing-section bg-gray-900"
-    >
+    <section id="how-it-works" className="relative py-24 sm:py-28 overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       <div className="max-w-6xl mx-auto px-6">
-        <ScrollReveal variant="up" className="text-center mb-16">
-          <span className="text-xs font-semibold text-indigo-500 uppercase tracking-widest">
-            How It Works
+        <ScrollReveal className="text-center mb-16">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-2/70 border border-border text-[11px] font-semibold text-accent uppercase tracking-widest">
+            How it works
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-100 mt-3 mb-4">
-            Simple & Intuitive
+          <h2 className="mt-4 text-3xl sm:text-4xl font-bold text-txt font-display tracking-tight">
+            Up and running in <span className="text-gradient">under a minute</span>
           </h2>
-          <p className="text-txt-secondary max-w-lg mx-auto">
-            Get started in minutes. No complicated setup required.
+          <p className="mt-3 text-txt-secondary max-w-xl mx-auto">
+            No setup, no configuration. Just open a chat and start.
           </p>
         </ScrollReveal>
 
-        <div className="grid max-w-4xl mx-auto grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="reveal">
-            <div className="flex items-center gap-3 px-4 py-6 rounded-xl bg-gray-800 border border-gray-700">
-              <div className="w-12 h-12 rounded-full bg-indigo-600/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-2xl font-bold text-indigo-400">1</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-medium text-gray-100">Describe Your Idea</h3>
-                <p className="text-sm text-gray-500">Tell Lumina what you want to create or discuss</p>
-              </div>
-            </div>
-          </div>
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Connector line */}
+          <div className="hidden md:block absolute top-10 left-[16%] right-[16%] h-px bg-gradient-to-r from-accent/40 via-purple-500/40 to-cyan-400/40 border-t border-dashed border-border/60" />
 
-          <div className="reveal">
-            <div className="flex items-center gap-3 px-4 py-6 rounded-xl bg-gray-800 border border-gray-700">
-              <div className="w-12 h-12 rounded-full bg-indigo-600/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-2xl font-bold text-indigo-400">2</span>
+          {steps.map((step, i) => (
+            <ScrollReveal key={step.title} delay={i * 120}>
+              <div className="relative flex flex-col items-center text-center">
+                <div className="relative z-10 flex items-center gap-3">
+                  <span className="w-20 h-20 rounded-2xl bg-surface-1 border border-border flex items-center justify-center shadow-lg shadow-black/20 ring-4 ring-surface-0">
+                    <step.icon className="w-8 h-8 text-accent" />
+                  </span>
+                </div>
+                <span className="mt-5 inline-flex items-center justify-center w-6 h-6 rounded-full bg-accent text-white text-[11px] font-bold">
+                  {i + 1}
+                </span>
+                <h3 className="mt-3 text-lg font-semibold text-txt font-display">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-sm text-txt-secondary max-w-xs leading-relaxed">
+                  {step.description}
+                </p>
               </div>
-              <div>
-                <h3 className="text-lg font-medium text-gray-100">AI Processes</h3>
-                <p className="text-sm text-gray-500">Lumina's AI analyzes your request and generates a response</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="reveal">
-            <div className="flex items-center gap-3 px-4 py-6 rounded-xl bg-gray-800 border border-gray-700">
-              <div className="w-12 h-12 rounded-full bg-indigo-600/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-2xl font-bold text-indigo-400">3</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-medium text-gray-100">Review & Iterate</h3>
-                <p className="text-sm text-gray-500">Read the response and ask for refinements</p>
-              </div>
-            </div>
-          </div>
+            </ScrollReveal>
+          ))}
         </div>
       </div>
     </section>

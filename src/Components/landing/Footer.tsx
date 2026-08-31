@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
-import { PiSparkleBold } from "react-icons/pi";
+import {
+  PiXLogoBold,
+  PiGithubLogoBold,
+  PiDiscordLogoBold,
+} from "react-icons/pi";
 
 const footerLinks = {
   Product: [
     { label: "Features", href: "#features" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "Changelog", href: "#" },
+    { label: "How it works", href: "#how-it-works" },
     { label: "Docs", href: "#" },
   ],
   Company: [
@@ -21,6 +24,12 @@ const footerLinks = {
   ],
 };
 
+const socials = [
+  { label: "X (Twitter)", icon: PiXLogoBold },
+  { label: "GitHub", icon: PiGithubLogoBold },
+  { label: "Discord", icon: PiDiscordLogoBold },
+];
+
 const Footer = () => {
   return (
     <footer className="border-t border-border">
@@ -28,11 +37,13 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
-                <PiSparkleBold className="w-4 h-4 text-accent" />
-              </div>
-              <span className="text-lg font-bold tracking-tight text-txt">
+            <Link to="/" className="flex items-center gap-2.5 mb-4 group">
+              <img
+                src="/lumina-logo.png"
+                alt="Lumina"
+                className="w-8 h-8 rounded-lg object-cover shadow-md shadow-accent/20 transition-transform group-hover:scale-105"
+              />
+              <span className="text-lg font-bold tracking-tight text-txt font-display">
                 Lumina
               </span>
             </Link>
@@ -51,7 +62,7 @@ const Footer = () => {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-sm text-txt-secondary hover:text-txt transition-colors"
+                      className="text-sm text-txt-secondary hover:text-accent transition-colors"
                     >
                       {link.label}
                     </a>
@@ -63,29 +74,21 @@ const Footer = () => {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-14 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-14 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-5">
           <p className="text-xs text-txt-muted">
-            &copy; {new Date().getFullYear()} Lumina. All rights reserved.
+            &copy; {new Date().getFullYear()} Lumina AI. All rights reserved.
           </p>
-          <div className="flex items-center gap-5">
-            <a
-              href="#"
-              className="text-xs text-txt-muted hover:text-txt transition-colors"
-            >
-              Twitter
-            </a>
-            <a
-              href="#"
-              className="text-xs text-txt-muted hover:text-txt transition-colors"
-            >
-              GitHub
-            </a>
-            <a
-              href="#"
-              className="text-xs text-txt-muted hover:text-txt transition-colors"
-            >
-              Discord
-            </a>
+          <div className="flex items-center gap-2">
+            {socials.map((social) => (
+              <a
+                key={social.label}
+                href="#"
+                aria-label={social.label}
+                className="w-9 h-9 rounded-xl border border-border bg-surface-1 flex items-center justify-center text-txt-muted hover:text-txt hover:border-accent/40 transition-all"
+              >
+                <social.icon className="w-4 h-4" />
+              </a>
+            ))}
           </div>
         </div>
       </div>

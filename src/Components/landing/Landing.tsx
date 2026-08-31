@@ -5,7 +5,6 @@ import Features from "./Features";
 import HowItWorks from "./HowItWorks";
 import UseCases from "./UseCases";
 import Testimonials from "./Testimonials";
-import Pricing from "./Pricing";
 import CTA from "./CTA";
 import Footer from "./Footer";
 import ScrollProgress from "./ScrollProgress";
@@ -30,7 +29,6 @@ const Landing = () => {
         <HowItWorks />
         <UseCases />
         <Testimonials />
-        <Pricing />
         <CTA />
       </main>
       <Footer />

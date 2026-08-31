@@ -97,7 +97,7 @@ const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
         },
         blockquote({ children, ...props }) {
           return (
-            <blockquote className="border-l-3 border-accent/40 pl-3 my-2 text-txt-muted italic" {...props}>
+            <blockquote className="border-l-[3px] border-accent/40 pl-3 my-2 text-txt-muted italic" {...props}>
               {children}
             </blockquote>
           );

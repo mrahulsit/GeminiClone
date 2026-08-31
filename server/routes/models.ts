@@ -6,6 +6,15 @@ const router = Router();
 const MODELS = [
   // --- Active Gemini 3 Free Tier Models ---
   {
+    id: "gemini-3.7-flash",
+    name: "Gemini 3.7 Flash",
+    description: "Latest-generation Flash model — excellent balance of speed and intelligence.",
+    maxTokens: 1048576,
+    badge: "Flash",
+    supportsWebSearch: true,
+    supportsImageGen: false,
+  },
+  {
     id: "gemini-3.6-flash",
     name: "Gemini 3.6 Flash",
     description: "Token-efficient Flash model for high-volume agentic planning and rapid task execution.",
@@ -66,8 +75,8 @@ const MODELS = [
 
   // --- Dedicated Image Generation Endpoint ---
   {
-    id: "imagen-3.0-generate-002",
-    name: "Imagen 3",
+    id: "imagen-4.0-generate-001",
+    name: "Imagen 4",
     description: "Google's dedicated text-to-image generation engine.",
     maxTokens: null,
     badge: "Image Gen",

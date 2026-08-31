@@ -46,6 +46,16 @@ export interface SearchResult {
   snippet: string;
 }
 
+export interface ModelInfo {
+  id: string;
+  name: string;
+  description: string;
+  maxTokens: number | null;
+  badge: string;
+  supportsWebSearch: boolean;
+  supportsImageGen: boolean;
+}
+
 export interface ContextType {
   /* Auth */
   currentUser: User | null;
@@ -61,7 +71,7 @@ export interface ContextType {
   switchChat: (chatId: string) => void;
   deleteChat: (chatId: string) => Promise<void>;
   renameChat: (chatId: string, title: string) => Promise<void>;
-  onSent: (prompt?: string) => Promise<void>;
+  onSent: (prompt?: string, opts?: { skipUserMessage?: boolean }) => Promise<void>;
   input: string;
   setInput: React.Dispatch<React.SetStateAction<string>>;
   loading: boolean;
@@ -71,6 +81,7 @@ export interface ContextType {
   filteredChats: Chat[];
 
   /* New chat features */
+  models: ModelInfo[];
   selectedModel: string;
   setSelectedModel: (model: string) => void;
   searchEnabled: boolean;
@@ -92,6 +103,7 @@ export interface ContextType {
   /* Theme / Accent / Font */
   theme: Theme;
   toggleTheme: () => void;
+  setTheme: (t: Theme) => void;
   accent: string;
   setAccent: (color: string) => void;
   fontSize: FontSize;

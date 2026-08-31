@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useRef, ReactNode } from "react";
-import type { Theme, FontSize, User, Message, Source, Chat, ContextType } from "../types";
+import type { Theme, FontSize, User, Message, Source, Chat, ContextType, ModelInfo } from "../types";
 import { api, getAccessToken, getRefreshToken, setTokens, clearTokens, API_URL } from "../utils/api";
 import { ACCENTS } from "../utils/constants";
 
@@ -19,6 +19,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
   const [streaming, setStreaming] = useState(false);
   const [input, setInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [models, setModels] = useState<ModelInfo[]>([]);
   const [selectedModel, setSelectedModel] = useState("gemini-3.6-flash");
   const [searchEnabled, setSearchEnabled] = useState(false);
   const [imageMode, setImageMode] = useState(false);
@@ -50,6 +51,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
         setCurrentUser(user);
         await loadChats();
         await loadPreferences();
+        await loadModels();
         // Clean up any empty chats from previous sessions
         await cleanEmptyChats();
       })
@@ -157,6 +159,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
 
   /* ── Font size ── */
   useEffect(() => {
+    document.documentElement.setAttribute("data-font", fontSize);
     if (currentUser) {
       api("/api/preferences", {
         method: "PUT",
@@ -164,6 +167,23 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
       }).catch(() => {});
     }
   }, [fontSize]);
+
+  /* ── Load models ── */
+  const loadModels = async () => {
+    try {
+      const { models: modelList } = await api<{ models: ModelInfo[] }>("/api/models");
+      if (modelList && modelList.length > 0) {
+        setModels(modelList);
+        // Make sure default selection is one of the available chat models
+        const chatModels = modelList.filter((m) => !m.supportsImageGen);
+        if (chatModels.length > 0 && !chatModels.some((m) => m.id === selectedModel)) {
+          setSelectedModel(chatModels[0].id);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load models:", err);
+    }
+  };
 
   /* ── Sync activeChat from chats array ── */
   useEffect(() => {
@@ -190,6 +210,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
       setCurrentUser(user);
       await loadChats();
       await loadPreferences();
+      await loadModels();
       return null;
     } catch (err: any) {
       return err.message || "Login failed";
@@ -214,6 +235,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
       setCurrentUser(user);
       await loadChats();
       await loadPreferences();
+      await loadModels();
       return null;
     } catch (err: any) {
       return err.message || "Registration failed";
@@ -342,7 +364,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
       );
     }
     setInput(lastUserMsg.content);
-    setTimeout(() => onSent(lastUserMsg.content), 50);
+    setTimeout(() => onSent(lastUserMsg.content, { skipUserMessage: true }), 50);
   };
 
   const editMessage = async (messageId: string, content: string) => {
@@ -361,13 +383,20 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
         prev.map((c) => {
           if (c.id !== activeChatId) return c;
           const idx = c.messages.findIndex((m) => m.id === messageId);
-          return { ...c, messages: c.messages.slice(0, idx + 1) };
+          return {
+            ...c,
+            messages: [
+              ...c.messages.slice(0, idx),
+              { ...c.messages[idx], content },
+              ...c.messages.slice(idx + 1),
+            ],
+          };
         })
       );
     }
-    // Resend with edited content
+    // Resend with edited content — the user message already exists
     setInput(content);
-    setTimeout(() => onSent(content), 50);
+    setTimeout(() => onSent(content, { skipUserMessage: true }), 50);
   };
 
   const pinChat = async (chatId: string) => {
@@ -437,7 +466,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
 
     if (format === "markdown") {
       const lines = chat.messages.map((m) => {
-        const role = m.role === "user" ? "**You**" : "**Lumina**";
+        const role = m.role === "user" ? "**You**" : "**Assistant**";
         return `### ${role}\n\n${m.content}`;
       });
       content = `# ${chat.title}\n\n${lines.join("\n\n---\n\n")}`;
@@ -459,7 +488,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   /* ═══ Send message ═══ */
-  const onSent = async (prompt?: string) => {
+  const onSent = async (prompt?: string, opts: { skipUserMessage?: boolean } = {}) => {
     const text = (prompt ?? input).trim();
     if (!text) return;
 
@@ -478,23 +507,25 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
       timestamp: Date.now(),
     };
 
-    // Optimistically add user message
-    setChatsState((prev) =>
-      prev.map((c) => {
-        if (c.id !== chatId) return c;
-        return {
-          ...c,
-          messages: [...c.messages, userMsg],
-          updatedAt: Date.now(),
-        };
-      })
-    );
+    // Optimistically add user message (skipped for edit/regenerate flows where it already exists)
+    if (!opts.skipUserMessage) {
+      setChatsState((prev) =>
+        prev.map((c) => {
+          if (c.id !== chatId) return c;
+          return {
+            ...c,
+            messages: [...c.messages, userMsg],
+            updatedAt: Date.now(),
+          };
+        })
+      );
 
-    // Save user message to server
-    api(`/api/chats/${chatId}/messages`, {
-      method: "POST",
-      body: JSON.stringify({ role: "user", content: text }),
-    }).catch(() => {});
+      // Save user message to server
+      api(`/api/chats/${chatId}/messages`, {
+        method: "POST",
+        body: JSON.stringify({ role: "user", content: text }),
+      }).catch(() => {});
+    }
 
     setLoading(true);
     setStreaming(true);
@@ -813,6 +844,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
         filteredChats,
         theme,
         toggleTheme,
+        setTheme,
         accent,
         setAccent,
         fontSize,
@@ -826,6 +858,7 @@ const ContextProvider = ({ children }: { children: ReactNode }) => {
         searchModalOpen,
         setSearchModalOpen,
         clearAllChats,
+        models,
         selectedModel,
         setSelectedModel,
         searchEnabled,
