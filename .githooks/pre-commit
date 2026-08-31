@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Abort commits that include likely secrets.
+# Enable: git config core.hooksPath .githooks
+
+set -euo pipefail
+
+# Match common secret formats in staged file contents.
+PATTERNS=(
+  'AIza[0-9A-Za-z_-]{20,}'                       # Google API key (legacy)
+  'AQ\.Ab8[0-9A-Za-z_-]+'                         # Google API key (new format)
+  'sk-[A-Za-z0-9_\-]{20,}'                        # OpenAI / Anthropic style key
+  'npg_[A-Za-z0-9]+'                              # Neon Postgres password
+  'AKIA[0-9A-Z]{16}'                              # AWS access key
+  'ghp_[0-9A-Za-z]{20,}'                          # GitHub PAT
+  'xox[baprs]-[0-9A-Za-z-]{10,}'                  # Slack token
+  '-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY'    # Private keys
+  'DATABASE_URL=.+postgres(ql)?://[^:]+:[^@]+@'   # DB URL containing a password
+  "JWT_SECRET=['\"]?[[:alnum:]_/+=-]{16,}"        # JWT secret value (should never be committed)
+  "GEMINI_API_KEY=['\"]?[[:alnum:]_./-]{16,}"     # Gemini API key value
+)
+
+# Files that legitimately show secret formats as documentation/templates.
+SKIP_PATHS='(\.githooks/|\.env\.example$)'
+
+for f in $(git diff --cached --name-only --diff-filter=ACM); do
+  [[ "$f" =~ $SKIP_PATHS ]] && continue
+
+  content=$(git show ":$f" 2>/dev/null || true)
+  for pat in "${PATTERNS[@]}"; do
+    if grep -Eqi -- "$pat" <<<"$content"; then
+      echo "❌  Commit blocked by pre-commit hook – potential secret in: $f"
+      echo "    (pattern: $pat)"
+      grep -Eio -- "$pat" <<<"$content" | sed 's/^/      /' | head -5
+      exit 1
+    fi
+  done
+done
+
+exit 0

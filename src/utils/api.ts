@@ -1,6 +1,6 @@
 /* ─── API Layer ─── */
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 const getAccessToken = () => localStorage.getItem("lumina_access_token");
 const getRefreshToken = () => localStorage.getItem("lumina_refresh_token");

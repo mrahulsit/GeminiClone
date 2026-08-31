@@ -3,6 +3,16 @@ import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "lumina-dev-secret-change-in-prod";
 
+if (
+  process.env.NODE_ENV === "production" &&
+  (!process.env.JWT_SECRET ||
+    process.env.JWT_SECRET === "lumina-dev-secret-change-in-prod" ||
+    process.env.JWT_SECRET === "lumina-prod-k3y-change-me-in-real-deployment")
+) {
+  console.error("FATAL: JWT_SECRET must be set to a strong secret in production");
+  process.exit(1);
+}
+
 export interface AuthRequest extends Request {
   userId?: string;
 }
